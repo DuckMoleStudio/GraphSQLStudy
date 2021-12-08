@@ -1,0 +1,29 @@
+type Vehicle {
+id: ID!,
+type: String,
+modelCode: String,
+brandName: String,
+launchDate: String,
+longName: String
+}
+
+type Route {
+    id: ID!,
+    shortName: String,
+    longName: String,
+    regNum: String,
+    routeType: String,
+    __typename: String
+	fullName: String
+  }
+
+type Query {
+vehicles(count: Int):[Vehicle]
+vehicle(id: ID):Vehicle
+routes: [Route]
+route(id: ID): Route
+}
+
+type Mutation {
+createVehicle(type: String!, modelCode: String!, brandName: String, launchDate: String):Vehicle
+}
