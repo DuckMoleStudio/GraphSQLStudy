@@ -1,2 +1,2 @@
 # GraphSQLStudy
-initial commit from CinServ
+Work from LapTop machine here
