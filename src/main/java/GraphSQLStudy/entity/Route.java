@@ -25,12 +25,5 @@ public class Route implements Serializable {
     private String routeType;
     @Column(name = "type_name")
     private String __typename;
-    @Column(name = "full_name")
-    private String fullName;
 
-    // Getter and setter
-
-    public String getFullName() {
-        return shortName + " -- " + longName;
-    }
 }
