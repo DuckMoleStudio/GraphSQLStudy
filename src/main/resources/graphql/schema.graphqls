@@ -1,0 +1,14 @@
+
+type Route {
+    id: ID!,
+    shortName: String,
+    longName: String,
+    regNum: String,
+    routeType: String,
+    __typename: String
+  }
+
+type Query {
+routes: [Route]
+route(id: ID): Route
+}
