@@ -1,60 +1,68 @@
 package GraphSQLStudy.service;
 
 import GraphSQLStudy.entity.Route;
-import GraphSQLStudy.entity.Vehicle;
 import GraphSQLStudy.repository.RouteRepository;
-import GraphSQLStudy.repository.VehicleRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
 
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    private VehicleRepository userRepositoryV;
+
     private RouteRepository userRepositoryR;
 
     @Autowired
-    public DataLoader(VehicleRepository userRepositoryV, RouteRepository userRepositoryR) {
-        this.userRepositoryV = userRepositoryV;
+    public DataLoader(RouteRepository userRepositoryR) {
         this.userRepositoryR = userRepositoryR;
     }
 
     public void run(ApplicationArguments args) {
-        final Vehicle vehicle1 = new Vehicle();
-        vehicle1.setType("car");
-        vehicle1.setModelCode("Scorpio");
-        vehicle1.setBrandName("Ford");
-        vehicle1.setLaunchDate(LocalDate.parse("1985-01-02"));
-        userRepositoryV.save(vehicle1);
 
-        final Vehicle vehicle2 = new Vehicle();
-        vehicle2.setType("car");
-        vehicle2.setModelCode("Escort Mk3");
-        vehicle2.setBrandName("Ford");
-        vehicle2.setLaunchDate(LocalDate.parse("1980-01-04"));
-        userRepositoryV.save(vehicle2);
+        int count=0;
+        InputStream is = getClass().getClassLoader().getResourceAsStream("moscow_bus_routes.xls");
+        try(
+                //FileInputStream fis = new FileInputStream("./resources/moscow_bus_routes.xls");
+                HSSFWorkbook workbook = new HSSFWorkbook(is)) {
+            // Get first sheet from the workbook
+            HSSFSheet sheet = workbook.getSheetAt(0);
 
-        //routes
+            // Get iterator to all the rows in current sheet
+            Iterator<Row> rowIterator = sheet.iterator();
+            rowIterator.next(); // skip first row with headers
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
 
-        final Route route1 = new Route();
-        route1.setShortName("500");
-        route1.setId(141500240);
-        route1.setLongName("From Chicago to LA");
-        route1.setRegNum("1147");
-        route1.setRouteType("A");
-        route1.set__typename("fuck knows");
-        userRepositoryR.save(route1);
+                // Create entity
+                final Route route = new Route();
 
-        final Route route2 = new Route();
-        route2.setShortName("519");
-        route2.setId(141500242);
-        route2.setLongName("to the Moon and Back");
-        route2.setRouteType("rocket");
-        userRepositoryR.save(route2);
+                // Get significant fields
+
+                route.setId(Integer.parseInt(row.getCell(2).getStringCellValue()));
+                route.setShortName(row.getCell(4).getStringCellValue());
+                route.setLongName(row.getCell(5).getStringCellValue());
+                route.setRegNum(row.getCell(3).getStringCellValue());
+                route.setRouteType(row.getCell(6).getStringCellValue());
+
+                userRepositoryR.save(route);
+                count++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.printf("\n\n===== Loaded %d routes ======\n\n", count);
 
     }
 }
