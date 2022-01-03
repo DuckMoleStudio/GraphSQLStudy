@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Data
 @EqualsAndHashCode
 @Entity
+@Table (name = "routes")
 public class Route implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -25,5 +26,6 @@ public class Route implements Serializable {
     private String routeType;
     @Column(name = "type_name")
     private String __typename;
+
 
 }
